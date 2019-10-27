@@ -1,9 +1,8 @@
 package util
 
 import (
-	"fmt"
-
 	"github.com/faiface/pixel/pixelgl"
+	"golang.org/x/image/colornames"
 )
 
 // MouseControl is a
@@ -19,7 +18,7 @@ func (m *MouseControl) Update(dt float64) {
 
 		mouse := win.MousePosition()
 		idx := m.GridRender.Grid.GetXY(mouse)
-		fmt.Println(idx)
-		m.GridRender.SetValue(idx.X, idx.Y, "")
+
+		m.GridRender.UpdateSelected(idx.X, idx.Y, 1, colornames.Yellow)
 	}
 }

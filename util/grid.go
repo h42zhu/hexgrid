@@ -8,6 +8,7 @@ import (
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
+	"golang.org/x/image/colornames"
 )
 
 // Grid is a 2 by 2 matrix
@@ -27,10 +28,12 @@ type Vec2 struct {
 
 // GridRender wraps grid with drawing refs
 type GridRender struct {
-	Grid      *Grid
-	win       *pixelgl.Window
-	imd       *imdraw.IMDraw
-	textAtlas *text.Atlas
+	Grid         *Grid
+	Selected     *Vec2
+	win          *pixelgl.Window
+	imd          *imdraw.IMDraw
+	textAtlas    *text.Atlas
+	defaultColor color.RGBA
 }
 
 // NewGrid returns a Grid
@@ -70,29 +73,54 @@ func (g *Grid) GetXY(v pixel.Vec) Vec2 {
 func NewGridRender(width int, height int, cellSize float64, position pixel.Vec, win *pixelgl.Window, imd *imdraw.IMDraw, textAtlas *text.Atlas) *GridRender {
 	grid := NewGrid(width, height, cellSize, position)
 	return &GridRender{
-		Grid:      grid,
-		win:       win,
-		imd:       imd,
-		textAtlas: textAtlas,
+		Grid:         grid,
+		win:          win,
+		imd:          imd,
+		textAtlas:    textAtlas,
+		defaultColor: colornames.Red,
 	}
 }
 
-// ShowGrid draws grid on screen
-func (g *GridRender) ShowGrid(color color.RGBA) {
+// UpdateSelected ...
+func (g *GridRender) UpdateSelected(x int, y int, border float64, color color.RGBA) {
+	if g.Selected != nil {
+		if g.Selected.X == x && g.Selected.Y == y {
+			return
+		}
 
-	drawRect := func(x int, y int) {
-		v := g.Grid.GetWorldPosition(x, y)
-		g.imd.Color = color
-		g.imd.Push(v)
-		g.imd.Push(v.Add(pixel.V(g.Grid.CellSize, 0)))
-		g.imd.Push(v.Add(pixel.V(g.Grid.CellSize, g.Grid.CellSize)))
-		g.imd.Push(v.Add(pixel.V(0, g.Grid.CellSize)))
-		g.imd.Rectangle(1)
+		// retore the prev selected
+		g.drawRect(g.Selected.X, g.Selected.Y, border, g.defaultColor)
+
+		// draw current selected
+		g.drawRect(x, y, border, color)
+	} else {
+		g.Selected = &Vec2{}
 	}
+
+	g.Selected.X = x
+	g.Selected.Y = y
+}
+
+func (g *GridRender) drawRect(x int, y int, border float64, color color.RGBA) {
+
+	g.imd.Color = color
+
+	v := g.Grid.GetWorldPosition(x, y)
+
+	botLeft := v.Add(pixel.V(g.Grid.CellSize, 0))
+	topLeft := v.Add(pixel.V(g.Grid.CellSize, g.Grid.CellSize))
+	topRight := v.Add(pixel.V(0, g.Grid.CellSize))
+	g.imd.Push(v, botLeft, topLeft, topRight, v)
+
+	g.imd.Rectangle(border)
+}
+
+// ShowGrid draws grid on screen
+func (g *GridRender) ShowGrid() {
 
 	for i := 0; i < g.Grid.Width; i++ {
 		for j := 0; j < g.Grid.Height; j++ {
-			drawRect(i, j)
+			g.drawRect(i, j, 1.0, g.defaultColor)
 		}
 	}
 }

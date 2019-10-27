@@ -33,7 +33,7 @@ func run() {
 
 	// grid system
 	grid := util.NewGridRender(5, 5, 50, pixel.Vec{X: 0, Y: 0}, win, imd, basicAtlas)
-	grid.ShowGrid(colornames.Red)
+	grid.ShowGrid()
 
 	// mouse control
 	mc := &util.MouseControl{
@@ -53,8 +53,10 @@ func run() {
 		// check mouse input
 		mc.Update(dt)
 
-		win.Clear(colornames.Aliceblue)
+		// update grid
+		// grid.ShowGrid(colornames.Green, colornames.Red)
 
+		win.Clear(colornames.Aliceblue)
 		imd.Draw(win)
 		grid.ShowText(colornames.Green, 2)
 
