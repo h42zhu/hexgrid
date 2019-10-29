@@ -2,17 +2,14 @@ package main
 
 import (
 	"fmt"
+	"tactics/hexagon"
 	"time"
 
 	"github.com/faiface/pixel"
 	"golang.org/x/image/colornames"
-	"golang.org/x/image/font/basicfont"
-
-	"tactics/util"
 
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/faiface/pixel/text"
 )
 
 func run() {
@@ -29,17 +26,23 @@ func run() {
 	// draw shapes
 	imd := imdraw.New(nil)
 	// text altas
-	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
+	// basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
 
 	// grid system
-	grid := util.NewGridRender(5, 5, 50, pixel.Vec{X: 0, Y: 0}, win, imd, basicAtlas)
-	grid.ShowGrid()
+	// grid := util.NewGridRender(5, 5, 50, pixel.Vec{X: 0, Y: 0}, win, imd, basicAtlas)
+	// grid.ShowGrid()
+
+	// hex test
+	hg := hexagon.NewHexGrid(20, pixel.V(400, 300), 3)
+
+	renderer := hexagon.NewRenderer(win, imd)
+	renderer.DrawHexGrid(hg, 0, colornames.Green)
 
 	// mouse control
-	mc := &util.MouseControl{
-		Win:        win,
-		GridRender: grid,
-	}
+	// mc := &util.MouseControl{
+	// 	Win:        win,
+	// 	GridRender: grid,
+	// }
 
 	win.SetSmooth(true)
 	last := time.Now()
@@ -50,15 +53,16 @@ func run() {
 		dt := time.Since(last).Seconds()
 		last = time.Now()
 
+		fmt.Println(dt)
+
 		// check mouse input
-		mc.Update(dt)
+		// mc.Update(dt)
 
 		// update grid
 		// grid.ShowGrid(colornames.Green, colornames.Red)
 
 		win.Clear(colornames.Aliceblue)
 		imd.Draw(win)
-		grid.ShowText(colornames.Green, 2)
 
 		win.Update()
 
