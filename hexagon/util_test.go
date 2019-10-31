@@ -6,11 +6,8 @@ import (
 	"github.com/faiface/pixel"
 )
 
-func TestGenRing(t *testing.T) {
-	res := genRing(2)
-	if len(res) != 19 {
-		t.Errorf("expected length to be %d, got %d", 19, len(res))
-	}
+func TestGenIndex(t *testing.T) {
+
 }
 
 func TestNewHexGrid(t *testing.T) {

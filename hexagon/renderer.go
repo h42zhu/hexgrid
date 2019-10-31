@@ -1,23 +1,28 @@
 package hexagon
 
 import (
+	"fmt"
 	"image/color"
 
+	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
 )
 
 // Renderer is a utility type for rendering text and hex shapes
 type Renderer struct {
-	win *pixelgl.Window
-	imd *imdraw.IMDraw
+	win       *pixelgl.Window
+	imd       *imdraw.IMDraw
+	textAtlas *text.Atlas
 }
 
 // NewRenderer creates a new render instance
-func NewRenderer(win *pixelgl.Window, imd *imdraw.IMDraw) *Renderer {
+func NewRenderer(win *pixelgl.Window, imd *imdraw.IMDraw, textAtlas *text.Atlas) *Renderer {
 	return &Renderer{
 		win,
 		imd,
+		textAtlas,
 	}
 }
 
@@ -32,8 +37,17 @@ func (r *Renderer) DrawHex(hexCell HexCell, border float64, color color.RGBA) {
 	r.imd.Polygon(border)
 }
 
+// DrawText paints the index of the hexCell
+func (r *Renderer) drawText(hexCelll HexCell, scale float64, color color.RGBA) {
+	basicTxt := text.New(hexCelll.Center, r.textAtlas)
+	basicTxt.Color = color
+	fmt.Fprintln(basicTxt, hexCelll.Index.String())
+	basicTxt.Draw(r.win, pixel.IM.Scaled(basicTxt.Orig, scale))
+}
+
 // DrawHexGrid draws a hex grid
 func (r *Renderer) DrawHexGrid(hg HexGrid, border float64, color color.RGBA) {
+
 	for _, hex := range hg.Cells {
 		r.DrawHex(hex, border, color)
 	}

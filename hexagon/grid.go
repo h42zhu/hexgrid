@@ -10,7 +10,7 @@ import (
 type HexCell struct {
 	Center pixel.Vec
 	Radius float64
-	Index  Vector3
+	Index  pixel.Vec
 }
 
 // GetCorner returns x, y coord at corner i (0..5)
@@ -18,7 +18,9 @@ type HexCell struct {
 func (hc HexCell) GetCorner(i int) pixel.Vec {
 	angleDeg := 60*i - 30
 	angleRad := degToRad(float64(angleDeg))
-	return pixel.V(hc.Center.X+hc.Radius*math.Cos(angleRad), hc.Center.X+hc.Radius*math.Sin(angleRad))
+	point := pixel.V(hc.Radius*math.Cos(angleRad), hc.Radius*math.Sin(angleRad))
+
+	return hc.Center.Add(point)
 }
 
 // GetAllCorners returns a slice of six corners
@@ -32,22 +34,23 @@ func (hc HexCell) GetAllCorners() []pixel.Vec {
 
 // IdxDistance ..
 func (hc HexCell) IdxDistance(dest HexCell) int {
-	h1 := hc.Index
-	h2 := dest.Index
+	h1 := doubleWidthVec3(hc.Index)
+	h2 := doubleWidthVec3(dest.Index)
+
 	return int(math.Abs(float64(h1.X-h2.X))+math.Abs(float64(h1.Y-h2.Y))+math.Abs(float64(h1.Z-h2.Z))) / 2
 }
 
 // HexGrid is a collection of HexCells
 type HexGrid struct {
 	CellSize float64
-	Cells    map[Vector3]HexCell
+	Cells    map[pixel.Vec]HexCell
 	Center   pixel.Vec
 }
 
 // NewHexGrid creates a new HexGrid
-func NewHexGrid(cellSize float64, center pixel.Vec, ringNum int) HexGrid {
-	cells := make(map[Vector3]HexCell)
-	idxList := genRing(ringNum)
+func NewHexGrid(cellSize float64, center pixel.Vec, size int) HexGrid {
+	cells := make(map[pixel.Vec]HexCell)
+	idxList := genIndex(size)
 
 	for _, idx := range idxList {
 		cells[idx] = makeCellFromIdx(cellSize, idx, center)
@@ -62,17 +65,23 @@ func NewHexGrid(cellSize float64, center pixel.Vec, ringNum int) HexGrid {
 }
 
 // NeighborIdx returns all the index of the neighbor cells
-func (hg HexGrid) NeighborIdx(hc HexCell) []Vector3 {
-	idx := hc.Index
-	c := make([]Vector3, 6)
-	for i, offset := range HexDirections {
-		idxNeighbor := idx.Add(offset)
-		c[i] = idxNeighbor
+func (hg HexGrid) NeighborIdx(hc HexCell) []pixel.Vec {
+	s := []pixel.Vec{}
+	for _, offset := range HexDirections {
+		s = append(s, hg.Center.Add(offset))
 	}
-	return c
+
+	return s
 }
 
 // GetWorldPosition converts a cell idx to position on screen
-func (hg HexGrid) GetWorldPosition(idx Vector3) pixel.Vec {
+func (hg HexGrid) GetWorldPosition(idx pixel.Vec) pixel.Vec {
 	return hg.Cells[idx].Center
+}
+
+// GetIndex returns the index of a hex cell from world position
+func (hg HexGrid) GetIndex(pos pixel.Vec) pixel.Vec {
+	x := math.Round(pos.Dot(InverseDoubleWidthBasisMatrix[0]) / hg.CellSize)
+	y := math.Round(pos.Dot(InverseDoubleWidthBasisMatrix[1]) / hg.CellSize)
+	return pixel.V(x, y)
 }
