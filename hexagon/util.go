@@ -13,16 +13,17 @@ var (
 		pixel.V(2, 0), pixel.V(1, -1), pixel.V(-1, -1),
 		pixel.V(-2, 0), pixel.V(-1, 1), pixel.V(1, 1),
 	}
+
 	// DoubleWidthBasisMatrix is 2 by 2 matrix of the basis vectors of DD coordinates
 	DoubleWidthBasisMatrix = []pixel.Vec{
-		pixel.V(3/2, 0),
-		pixel.V(0, math.Sqrt(3)),
+		pixel.V(math.Sqrt(3)/2, 0),
+		pixel.V(0, 3.0/2),
 	}
 
 	// InverseDoubleWidthBasisMatrix is 2 by 2 matrix of the basis vectors of DD coordinates
 	InverseDoubleWidthBasisMatrix = []pixel.Vec{
-		pixel.V(2/3, 0),
-		pixel.V(0, math.Sqrt(3)/3),
+		pixel.V(2.0/math.Sqrt(3), 0),
+		pixel.V(0, 2.0/3),
 	}
 )
 

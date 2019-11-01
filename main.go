@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"tactics/control"
 	"tactics/hexagon"
 
 	"github.com/faiface/pixel"
@@ -29,22 +30,18 @@ func run() {
 	// text altas
 	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
 
-	// grid system
-	// grid := util.NewGridRender(5, 5, 50, pixel.Vec{X: 0, Y: 0}, win, imd, basicAtlas)
-	// grid.ShowGrid()
-
+	// hex grid system
 	hg := hexagon.NewHexGrid(40, pixel.V(0, 0), 4)
 
 	renderer := hexagon.NewRenderer(win, imd, basicAtlas)
-	renderer.DrawHexGrid(hg, 1, colornames.Green)
+	renderer.DrawHexGrid(&hg, 1, colornames.Green)
 
 	// mouse control
-	// mc := &util.MouseControl{
-	// 	Win:        win,
-	// 	GridRender: grid,
-	// }
+	mc := &control.MouseControl{
+		Win: win,
+	}
 
-	// win.SetSmooth(true)
+	win.SetSmooth(true)
 	// last := time.Now()
 
 	// main game loop
@@ -54,12 +51,19 @@ func run() {
 		// last = time.Now()
 
 		// check mouse input
-		// mc.Update(dt)
+		if win.JustPressed(pixelgl.MouseButtonLeft) {
 
-		// update grid
+			mouse := mc.GetMousePosition()
+			fmt.Println(mouse)
+			idx := hg.GetIndex(mouse)
+			fmt.Println(idx)
 
+		}
+
+		// update
 		win.Clear(colornames.Aliceblue)
 		imd.Draw(win)
+		renderer.DrawTextGrid(&hg, 1, colornames.Black)
 
 		win.Update()
 

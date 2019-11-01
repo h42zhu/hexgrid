@@ -81,7 +81,9 @@ func (hg HexGrid) GetWorldPosition(idx pixel.Vec) pixel.Vec {
 
 // GetIndex returns the index of a hex cell from world position
 func (hg HexGrid) GetIndex(pos pixel.Vec) pixel.Vec {
-	x := math.Round(pos.Dot(InverseDoubleWidthBasisMatrix[0]) / hg.CellSize)
-	y := math.Round(pos.Dot(InverseDoubleWidthBasisMatrix[1]) / hg.CellSize)
+	posAdj := pos.Add(hg.Center.Scaled(-1))
+
+	x := math.Round(posAdj.Dot(InverseDoubleWidthBasisMatrix[0]) / hg.CellSize)
+	y := math.Round(posAdj.Dot(InverseDoubleWidthBasisMatrix[1]) / hg.CellSize)
 	return pixel.V(x, y)
 }

@@ -37,16 +37,24 @@ func (r *Renderer) DrawHex(hexCell HexCell, border float64, color color.RGBA) {
 	r.imd.Polygon(border)
 }
 
-// DrawText paints the index of the hexCell
+// drawText paints the index of the hexCell
 func (r *Renderer) drawText(hexCelll HexCell, scale float64, color color.RGBA) {
-	basicTxt := text.New(hexCelll.Center, r.textAtlas)
+
+	basicTxt := text.New(hexCelll.Center.Add(pixel.V(-4*hexCelll.Radius/5, 0)), r.textAtlas)
 	basicTxt.Color = color
 	fmt.Fprintln(basicTxt, hexCelll.Index.String())
 	basicTxt.Draw(r.win, pixel.IM.Scaled(basicTxt.Orig, scale))
 }
 
+// DrawTextGrid ...
+func (r *Renderer) DrawTextGrid(hg *HexGrid, scale float64, color color.RGBA) {
+	for _, hex := range hg.Cells {
+		r.drawText(hex, scale, color)
+	}
+}
+
 // DrawHexGrid draws a hex grid
-func (r *Renderer) DrawHexGrid(hg HexGrid, border float64, color color.RGBA) {
+func (r *Renderer) DrawHexGrid(hg *HexGrid, border float64, color color.RGBA) {
 
 	for _, hex := range hg.Cells {
 		r.DrawHex(hex, border, color)
