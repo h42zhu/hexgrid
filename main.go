@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"tactics/common"
 	"tactics/control"
 	"tactics/hexagon"
 
@@ -14,6 +16,13 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 )
 
+var (
+	imageFiles = []string{
+		"./asset/image/enemy.png",
+		"./asset/image/spaceship.png",
+	}
+)
+
 func run() {
 	cfg := pixelgl.WindowConfig{
 		Title:  "Pixel Rocks!",
@@ -22,7 +31,7 @@ func run() {
 	}
 	win, err := pixelgl.NewWindow(cfg)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	// draw shapes
@@ -35,6 +44,12 @@ func run() {
 
 	renderer := hexagon.NewRenderer(win, imd, basicAtlas)
 	renderer.DrawHexGrid(&hg, 1, colornames.Green)
+
+	assetMap, loadFileErr := common.LoadPictures(imageFiles)
+	if loadFileErr != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(assetMap)
 
 	// mouse control
 	mc := &control.MouseControl{
@@ -53,11 +68,9 @@ func run() {
 		// check mouse input
 		if win.JustPressed(pixelgl.MouseButtonLeft) {
 
-			mouse := mc.GetMousePosition()
-			fmt.Println(mouse)
-			idx := hg.GetIndex(mouse)
-			fmt.Println(idx)
-
+			mc.SelectCell(&hg)
+			renderer.DrawHexGrid(&hg, 1, colornames.Green)
+			renderer.DrawSelectedCell(&hg, 1, colornames.Hotpink)
 		}
 
 		// update

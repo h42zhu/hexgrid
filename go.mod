@@ -3,6 +3,7 @@ module tactics
 go 1.12
 
 require (
+	github.com/dyrkin/fsm v0.0.0-20181122213812-68a0d0ca4628
 	github.com/faiface/glhf v0.0.0-20181018222622-82a6317ac380 // indirect
 	github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3 // indirect
 	github.com/faiface/pixel v0.8.0

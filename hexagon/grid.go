@@ -42,9 +42,10 @@ func (hc HexCell) IdxDistance(dest HexCell) int {
 
 // HexGrid is a collection of HexCells
 type HexGrid struct {
-	CellSize float64
-	Cells    map[pixel.Vec]HexCell
-	Center   pixel.Vec
+	CellSize     float64
+	Cells        map[pixel.Vec]HexCell
+	Center       pixel.Vec
+	SelectedCell *pixel.Vec
 }
 
 // NewHexGrid creates a new HexGrid
@@ -57,9 +58,10 @@ func NewHexGrid(cellSize float64, center pixel.Vec, size int) HexGrid {
 	}
 
 	return HexGrid{
-		CellSize: cellSize,
-		Center:   center,
-		Cells:    cells,
+		CellSize:     cellSize,
+		Center:       center,
+		Cells:        cells,
+		SelectedCell: nil,
 	}
 
 }

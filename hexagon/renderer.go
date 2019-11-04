@@ -60,3 +60,12 @@ func (r *Renderer) DrawHexGrid(hg *HexGrid, border float64, color color.RGBA) {
 		r.DrawHex(hex, border, color)
 	}
 }
+
+// DrawSelectedCell draws the selected cell
+func (r *Renderer) DrawSelectedCell(hg *HexGrid, border float64, color color.RGBA) {
+	if hg.SelectedCell != nil {
+		if hexCell, ok := hg.Cells[*hg.SelectedCell]; ok {
+			r.DrawHex(hexCell, border, color)
+		}
+	}
+}
