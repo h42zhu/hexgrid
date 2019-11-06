@@ -3,6 +3,9 @@ package common
 import (
 	"fmt"
 	"image"
+	"strings"
+
+	// this is for init image decode
 	_ "image/png"
 	"os"
 	"path/filepath"
@@ -31,7 +34,8 @@ func LoadPictures(path []string) (map[string]*pixel.Sprite, error) {
 		if err != nil {
 			return nil, err
 		}
-		name := filepath.Base(f)
+		basename := filepath.Base(f)
+		name := strings.TrimSuffix(basename, filepath.Ext(basename))
 		sprite := pixel.NewSprite(pic, pic.Bounds())
 		sm[name] = sprite
 	}

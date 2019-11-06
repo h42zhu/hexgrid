@@ -74,11 +74,11 @@ func genIndex(size int) []pixel.Vec {
 }
 
 // makeCellFromIdx creates a hex cell from an idx
-func makeCellFromIdx(radius float64, idx pixel.Vec, offset pixel.Vec) HexCell {
+func makeCellFromIdx(radius float64, idx pixel.Vec, offset pixel.Vec) *HexCell {
 	x := idx.Dot(DoubleWidthBasisMatrix[0]) * radius
 	y := idx.Dot(DoubleWidthBasisMatrix[1]) * radius
 
-	return HexCell{
+	return &HexCell{
 		Center: pixel.V(x, y).Add(offset),
 		Radius: radius,
 		Index:  idx,

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"tactics/common"
-	"tactics/control"
 	"tactics/hexagon"
+	"tactics/scene"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/text"
@@ -42,41 +42,43 @@ func run() {
 	// hex grid system
 	hg := hexagon.NewHexGrid(40, pixel.V(0, 0), 4)
 
-	renderer := hexagon.NewRenderer(win, imd, basicAtlas)
-	renderer.DrawHexGrid(&hg, 1, colornames.Green)
+	renderer := scene.NewRenderer(win, imd, basicAtlas)
+	battleScene := scene.NewScene(renderer)
+	battleScene.RenderHexGrid(hg)
 
 	assetMap, loadFileErr := common.LoadPictures(imageFiles)
 	if loadFileErr != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(assetMap)
+
+	spaceship := scene.NewEntity(assetMap["spaceship"], pixel.V(1, 1), "spaceship", true)
+	enemy := scene.NewEntity(assetMap["enemy"], pixel.V(2, 2), "enemy", false)
+
+	battleScene.AddEntity(spaceship)
+	battleScene.AddEntity(enemy)
 
 	// mouse control
-	mc := &control.MouseControl{
-		Win: win,
-	}
+	// mc := &control.MouseControl{
+	// 	Win: win,
+	// }
 
 	win.SetSmooth(true)
-	// last := time.Now()
 
 	// main game loop
 	for !win.Closed() {
-		// time tick
-		// dt := time.Since(last).Seconds()
-		// last = time.Now()
+		// clear
+		win.Clear(colornames.Aliceblue)
 
 		// check mouse input
 		if win.JustPressed(pixelgl.MouseButtonLeft) {
-
-			mc.SelectCell(&hg)
-			renderer.DrawHexGrid(&hg, 1, colornames.Green)
-			renderer.DrawSelectedCell(&hg, 1, colornames.Hotpink)
+			fmt.Println("Hello")
 		}
+		battleScene.RenderMousePosition(hg, win.MousePosition())
 
-		// update
-		win.Clear(colornames.Aliceblue)
+		battleScene.RenderHexGrid(hg)
+
 		imd.Draw(win)
-		renderer.DrawTextGrid(&hg, 1, colornames.Black)
+		battleScene.RenderAllEntity(hg)
 
 		win.Update()
 

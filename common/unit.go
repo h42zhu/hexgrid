@@ -4,9 +4,9 @@ import (
 	"github.com/dyrkin/fsm"
 )
 
-// Unit represent a combat unit in game
-type Unit struct {
+// UnitInfo represent a combat unitinfo in game
+type UnitInfo struct {
 	Morale float64
-	Player bool
+	Ally   bool
 	State  fsm.State
 }
