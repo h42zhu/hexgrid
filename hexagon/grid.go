@@ -46,6 +46,7 @@ type HexGrid struct {
 	Cells        map[pixel.Vec]*HexCell
 	Center       pixel.Vec
 	SelectedCell *pixel.Vec
+	HoverCell    *pixel.Vec
 }
 
 // NewHexGrid creates a new HexGrid
@@ -62,6 +63,7 @@ func NewHexGrid(cellSize float64, center pixel.Vec, sizeX int, sizeY int) *HexGr
 		Center:       center,
 		Cells:        cells,
 		SelectedCell: nil,
+		HoverCell:    nil,
 	}
 }
 

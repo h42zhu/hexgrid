@@ -12,6 +12,7 @@ type Scene struct {
 	Enemy    map[pixel.Vec]*Entity
 	Ally     map[pixel.Vec]*Entity
 	Renderer *Renderer
+	Grid     *hexagon.HexGrid
 }
 
 // Entity ..
@@ -33,11 +34,12 @@ func NewEntity(s *pixel.Sprite, idx pixel.Vec, t string, ally bool) *Entity {
 }
 
 // NewScene ..
-func NewScene(r *Renderer) *Scene {
+func NewScene(r *Renderer, hg *hexagon.HexGrid) *Scene {
 	return &Scene{
 		Enemy:    map[pixel.Vec]*Entity{},
 		Ally:     map[pixel.Vec]*Entity{},
 		Renderer: r,
+		Grid:     hg,
 	}
 }
 
@@ -51,41 +53,43 @@ func (s *Scene) AddEntity(entity *Entity) {
 }
 
 // RenderAllEntity ..
-func (s *Scene) RenderAllEntity(hg *hexagon.HexGrid) {
+func (s *Scene) RenderAllEntity() {
 	for _, entity := range s.Ally {
-		s.Renderer.RenderEntityOnHexGrid(entity, hg)
+		s.Renderer.RenderEntityHex(entity, s.Grid)
 	}
 
 	for _, entity := range s.Enemy {
-		s.Renderer.RenderEntityOnHexGrid(entity, hg)
+		s.Renderer.RenderEntityHex(entity, s.Grid)
 	}
 }
 
 // RenderHexGrid ..
-func (s *Scene) RenderHexGrid(hg *hexagon.HexGrid) {
-	s.Renderer.DrawHexGrid(hg, 1.0, colornames.Black)
+func (s *Scene) RenderHexGrid() {
+	s.Renderer.DrawHexGrid(s.Grid, 1.0, colornames.Black)
 }
 
 // RenderMousePosition ..
-func (s *Scene) RenderMousePosition(hg *hexagon.HexGrid, pos pixel.Vec) {
+func (s *Scene) RenderMousePosition(pos pixel.Vec) {
+	hg := s.Grid
 	idx := hg.GetIndex(pos)
+
 	if _, ok := hg.Cells[idx]; !ok {
 		return
 	}
 
-	if hg.SelectedCell != nil {
-		prevSelectedCell := *(hg.SelectedCell)
+	if hg.HoverCell != nil {
+		prevHoverCell := *(hg.HoverCell)
 		// if val, ok := dict["foo"]; ok
-		if prevSelectedCell != idx {
-			if _, ok := hg.Cells[prevSelectedCell]; ok {
-				hexCell := hg.Cells[prevSelectedCell]
+		if prevHoverCell != idx {
+			if _, ok := hg.Cells[prevHoverCell]; ok {
+				hexCell := hg.Cells[prevHoverCell]
 				s.Renderer.DrawHex(hexCell, 0, colornames.Aliceblue)
-				hg.SelectedCell = &idx
-				s.Renderer.DrawSelectedCell(hg, 0, colornames.Grey)
+				hg.HoverCell = &idx
+				s.Renderer.DrawHoverCell(hg, 0, colornames.Grey)
 			}
 		}
 	} else {
-		hg.SelectedCell = &idx
-		s.Renderer.DrawSelectedCell(hg, 0, colornames.Grey)
+		hg.HoverCell = &idx
+		s.Renderer.DrawHoverCell(hg, 0, colornames.Grey)
 	}
 }

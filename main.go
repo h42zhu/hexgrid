@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"tactics/common"
+	"tactics/control"
 	"tactics/hexagon"
 	"tactics/scene"
 
@@ -43,8 +44,8 @@ func run() {
 	hg := hexagon.NewHexGrid(40, pixel.V(0, 0), 13, 6)
 
 	renderer := scene.NewRenderer(win, imd, basicAtlas)
-	battleScene := scene.NewScene(renderer)
-	battleScene.RenderHexGrid(hg)
+	battleScene := scene.NewScene(renderer, hg)
+	// battleScene.RenderHexGrid()
 
 	assetMap, loadFileErr := common.LoadPictures(imageFiles)
 	if loadFileErr != nil {
@@ -58,9 +59,7 @@ func run() {
 	battleScene.AddEntity(enemy)
 
 	// mouse control
-	// mc := &control.MouseControl{
-	// 	Win: win,
-	// }
+	mc := control.NewMouseControl(win)
 
 	win.SetSmooth(true)
 
@@ -71,15 +70,15 @@ func run() {
 
 		// check mouse input
 		if win.JustPressed(pixelgl.MouseButtonLeft) {
-			idx := hg.GetIndex(win.MousePosition())
-			fmt.Println(idx)
+			// select / place units
+			mc.MouseAction(battleScene)
 		}
-		battleScene.RenderMousePosition(hg, win.MousePosition())
+		battleScene.RenderMousePosition(win.MousePosition())
 
-		battleScene.RenderHexGrid(hg)
+		// battleScene.RenderHexGrid()
 
 		imd.Draw(win)
-		battleScene.RenderAllEntity(hg)
+		battleScene.RenderAllEntity()
 
 		win.Update()
 

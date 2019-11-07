@@ -59,23 +59,23 @@ func (r *Renderer) DrawHexGrid(hg *hexagon.HexGrid, border float64, color color.
 	}
 }
 
-// DrawSelectedCell draws the selected cell
-func (r *Renderer) DrawSelectedCell(hg *hexagon.HexGrid, border float64, color color.RGBA) {
-	if hg.SelectedCell != nil {
-		if hexCell, ok := hg.Cells[*hg.SelectedCell]; ok {
+// DrawHoverCell draws the selected cell
+func (r *Renderer) DrawHoverCell(hg *hexagon.HexGrid, border float64, color color.RGBA) {
+	if hg.HoverCell != nil {
+		if hexCell, ok := hg.Cells[*hg.HoverCell]; ok {
 			r.DrawHex(hexCell, border, color)
 		}
 	}
 }
 
-// RenderEntity draws an entity sprite onto the scene
-func (r *Renderer) RenderEntity(entity *Entity, position pixel.Matrix) {
+// RenderEntityPosition draws an entity sprite onto the scene
+func (r *Renderer) RenderEntityPosition(entity *Entity, position pixel.Matrix) {
 	entity.Sprite.Draw(r.win, position)
 }
 
-// RenderEntityOnHexGrid ..
-func (r *Renderer) RenderEntityOnHexGrid(entity *Entity, hg *hexagon.HexGrid) {
+// RenderEntityHex ..
+func (r *Renderer) RenderEntityHex(entity *Entity, hg *hexagon.HexGrid) {
 	v := hg.GetWorldPosition(entity.Index)
 	position := pixel.IM.Moved(v)
-	r.RenderEntity(entity, position)
+	r.RenderEntityPosition(entity, position)
 }
