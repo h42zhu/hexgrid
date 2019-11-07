@@ -26,7 +26,7 @@ var (
 func run() {
 	cfg := pixelgl.WindowConfig{
 		Title:  "Pixel Rocks!",
-		Bounds: pixel.R(0, 0, 800, 600),
+		Bounds: pixel.R(0, 0, 960, 720),
 		VSync:  true,
 	}
 	win, err := pixelgl.NewWindow(cfg)
@@ -40,7 +40,7 @@ func run() {
 	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
 
 	// hex grid system
-	hg := hexagon.NewHexGrid(40, pixel.V(0, 0), 4)
+	hg := hexagon.NewHexGrid(40, pixel.V(0, 0), 13, 6)
 
 	renderer := scene.NewRenderer(win, imd, basicAtlas)
 	battleScene := scene.NewScene(renderer)
@@ -71,7 +71,8 @@ func run() {
 
 		// check mouse input
 		if win.JustPressed(pixelgl.MouseButtonLeft) {
-			fmt.Println("Hello")
+			idx := hg.GetIndex(win.MousePosition())
+			fmt.Println(idx)
 		}
 		battleScene.RenderMousePosition(hg, win.MousePosition())
 

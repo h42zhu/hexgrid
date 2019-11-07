@@ -79,7 +79,7 @@ func (s *Scene) RenderMousePosition(hg *hexagon.HexGrid, pos pixel.Vec) {
 		if prevSelectedCell != idx {
 			if _, ok := hg.Cells[prevSelectedCell]; ok {
 				hexCell := hg.Cells[prevSelectedCell]
-				s.Renderer.DrawHex(hexCell, 0, colornames.White)
+				s.Renderer.DrawHex(hexCell, 0, colornames.Aliceblue)
 				hg.SelectedCell = &idx
 				s.Renderer.DrawSelectedCell(hg, 0, colornames.Grey)
 			}

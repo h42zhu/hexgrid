@@ -49,9 +49,9 @@ type HexGrid struct {
 }
 
 // NewHexGrid creates a new HexGrid
-func NewHexGrid(cellSize float64, center pixel.Vec, size int) *HexGrid {
+func NewHexGrid(cellSize float64, center pixel.Vec, sizeX int, sizeY int) *HexGrid {
 	cells := make(map[pixel.Vec]*HexCell)
-	idxList := genIndex(size)
+	idxList := genIndex(sizeX, sizeY)
 
 	for _, idx := range idxList {
 		cells[idx] = makeCellFromIdx(cellSize, idx, center)
@@ -63,7 +63,6 @@ func NewHexGrid(cellSize float64, center pixel.Vec, size int) *HexGrid {
 		Cells:        cells,
 		SelectedCell: nil,
 	}
-
 }
 
 // NeighborIdx returns all the index of the neighbor cells

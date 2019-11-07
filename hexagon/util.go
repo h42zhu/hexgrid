@@ -59,14 +59,16 @@ func degToRad(deg float64) float64 {
 	return math.Pi / 180 * deg
 }
 
-func genIndex(size int) []pixel.Vec {
+func genIndex(sizeX int, sizeY int) []pixel.Vec {
 	s := []pixel.Vec{}
 
-	for x := 0; x <= size; x++ {
-		m := x * 2
-		for y := 0; y <= m; y++ {
-			z := m - y
-			s = append(s, pixel.V(float64(y), float64(z)))
+	for y := 0; y <= sizeY*2; y += 2 {
+		for x := 0; x <= sizeX*2; x += 2 {
+			s = append(s, pixel.V(float64(x), float64(y)))
+		}
+
+		for x := 1; x <= sizeX*2+1; x += 2 {
+			s = append(s, pixel.V(float64(x), float64(y+1)))
 		}
 
 	}
