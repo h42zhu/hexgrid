@@ -48,7 +48,7 @@ func Vec3(x int, y int, z int) Vector3 {
 	}
 }
 
-func doubleWidthVec3(center pixel.Vec) Vector3 {
+func doubleWidthVec3(center HexIndex) Vector3 {
 	x := int((center.Y - center.X) / 2)
 	z := int(center.X)
 	y := int(-x - z)
@@ -59,16 +59,16 @@ func degToRad(deg float64) float64 {
 	return math.Pi / 180 * deg
 }
 
-func genIndex(sizeX int, sizeY int) []pixel.Vec {
-	s := []pixel.Vec{}
+func genIndex(sizeX int, sizeY int) []HexIndex {
+	s := []HexIndex{}
 
 	for y := 0; y <= sizeY*2; y += 2 {
 		for x := 0; x <= sizeX*2; x += 2 {
-			s = append(s, pixel.V(float64(x), float64(y)))
+			s = append(s, NewHexIndex(x, y))
 		}
 
 		for x := 1; x <= sizeX*2+1; x += 2 {
-			s = append(s, pixel.V(float64(x), float64(y+1)))
+			s = append(s, NewHexIndex(x, y+1))
 		}
 
 	}
@@ -76,9 +76,11 @@ func genIndex(sizeX int, sizeY int) []pixel.Vec {
 }
 
 // makeCellFromIdx creates a hex cell from an idx
-func makeCellFromIdx(radius float64, idx pixel.Vec, offset pixel.Vec) *HexCell {
-	x := idx.Dot(DoubleWidthBasisMatrix[0]) * radius
-	y := idx.Dot(DoubleWidthBasisMatrix[1]) * radius
+func makeCellFromIdx(radius float64, idx HexIndex, offset pixel.Vec) *HexCell {
+
+	idxVec := pixel.V(float64(idx.X), float64(idx.Y))
+	x := idxVec.Dot(DoubleWidthBasisMatrix[0]) * radius
+	y := idxVec.Dot(DoubleWidthBasisMatrix[1]) * radius
 
 	return &HexCell{
 		Center: pixel.V(x, y).Add(offset),

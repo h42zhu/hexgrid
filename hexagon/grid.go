@@ -1,16 +1,35 @@
 package hexagon
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/faiface/pixel"
 )
 
+type HexIndex struct {
+	X int
+	Y int
+}
+
+// String returns a string repr of hex index
+func (h HexIndex) String() string {
+	return fmt.Sprintf("(%d, %d)", h.X, h.Y)
+}
+
+// NewHexIndex ..
+func NewHexIndex(x int, y int) HexIndex {
+	return HexIndex{
+		X: x,
+		Y: y,
+	}
+}
+
 // HexCell defines a hexagonal cell
 type HexCell struct {
 	Center pixel.Vec
 	Radius float64
-	Index  pixel.Vec
+	Index  HexIndex
 }
 
 // GetCorner returns x, y coord at corner i (0..5)
@@ -42,16 +61,16 @@ func (hc *HexCell) IdxDistance(dest HexCell) int {
 
 // HexGrid is a collection of HexCells
 type HexGrid struct {
-	CellSize     float64
-	Cells        map[pixel.Vec]*HexCell
-	Center       pixel.Vec
-	SelectedCell *pixel.Vec
-	HoverCell    *pixel.Vec
+	CellSize       float64
+	Cells          map[HexIndex]*HexCell
+	Center         pixel.Vec
+	SelectedEntity string
+	HoverCell      *HexIndex
 }
 
 // NewHexGrid creates a new HexGrid
 func NewHexGrid(cellSize float64, center pixel.Vec, sizeX int, sizeY int) *HexGrid {
-	cells := make(map[pixel.Vec]*HexCell)
+	cells := make(map[HexIndex]*HexCell)
 	idxList := genIndex(sizeX, sizeY)
 
 	for _, idx := range idxList {
@@ -59,11 +78,11 @@ func NewHexGrid(cellSize float64, center pixel.Vec, sizeX int, sizeY int) *HexGr
 	}
 
 	return &HexGrid{
-		CellSize:     cellSize,
-		Center:       center,
-		Cells:        cells,
-		SelectedCell: nil,
-		HoverCell:    nil,
+		CellSize:       cellSize,
+		Center:         center,
+		Cells:          cells,
+		SelectedEntity: "",
+		HoverCell:      nil,
 	}
 }
 
@@ -78,21 +97,31 @@ func (hg *HexGrid) NeighborIdx(hc *HexCell) []pixel.Vec {
 }
 
 // GetWorldPosition converts a cell idx to position on screen
-func (hg *HexGrid) GetWorldPosition(idx pixel.Vec) pixel.Vec {
-	return hg.Cells[idx].Center
+func (hg *HexGrid) GetWorldPosition(idx HexIndex) (pixel.Vec, error) {
+	if hex, ok := hg.Cells[idx]; ok {
+		return hex.Center, nil
+	}
+
+	return pixel.V(0, 0), fmt.Errorf("unable to find hex index: %s", idx.String())
 }
 
 // GetIndex returns the index of a hex cell from world position
-func (hg *HexGrid) GetIndex(pos pixel.Vec) pixel.Vec {
+func (hg *HexGrid) GetIndex(pos pixel.Vec) HexIndex {
 	posAdj := pos.Add(hg.Center.Scaled(-1))
 
-	x := math.Round(posAdj.Dot(InverseDoubleWidthBasisMatrix[0]) / hg.CellSize)
-	y := math.Round(posAdj.Dot(InverseDoubleWidthBasisMatrix[1]) / hg.CellSize)
-	return pixel.V(x, y)
-}
+	x := posAdj.Dot(InverseDoubleWidthBasisMatrix[0]) / hg.CellSize
+	y := posAdj.Dot(InverseDoubleWidthBasisMatrix[1]) / hg.CellSize
 
-// SetSelectedIndex sets the selected index from a world coordinate
-func (hg *HexGrid) SetSelectedIndex(pos pixel.Vec) {
-	idx := hg.GetIndex(pos)
-	hg.SelectedCell = &idx
+	intX := int(x)
+	intY := int(y)
+	// need to adjust to inaccuracy, making sure x+y is a even number
+	if (intX+intY)%2 != 0 {
+		if (x - float64(intX)) >= (y - float64(intY)) {
+			intX++
+		} else {
+			intY++
+		}
+	}
+
+	return NewHexIndex(intX, intY)
 }

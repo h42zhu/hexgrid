@@ -1,6 +1,7 @@
 package scene
 
 import (
+	"fmt"
 	"image/color"
 	"tactics/hexagon"
 
@@ -69,13 +70,18 @@ func (r *Renderer) DrawHoverCell(hg *hexagon.HexGrid, border float64, color colo
 }
 
 // RenderEntityPosition draws an entity sprite onto the scene
-func (r *Renderer) RenderEntityPosition(entity *Entity, position pixel.Matrix) {
+func (r *Renderer) RenderEntityPosition(entity *hexagon.Entity, position pixel.Matrix) {
 	entity.Sprite.Draw(r.win, position)
 }
 
 // RenderEntityHex ..
-func (r *Renderer) RenderEntityHex(entity *Entity, hg *hexagon.HexGrid) {
-	v := hg.GetWorldPosition(entity.Index)
+func (r *Renderer) RenderEntityHex(entity *hexagon.Entity, hg *hexagon.HexGrid) {
+	v, err := hg.GetWorldPosition(entity.GetIndex())
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
 	position := pixel.IM.Moved(v)
 	r.RenderEntityPosition(entity, position)
 }

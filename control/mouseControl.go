@@ -1,16 +1,16 @@
 package control
 
 import (
-	"fmt"
+	"sync"
 	"tactics/scene"
 
-	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 )
 
 // MouseControl is a struct
 type MouseControl struct {
-	Win *pixelgl.Window
+	Win  *pixelgl.Window
+	Lock sync.RWMutex
 }
 
 // NewMouseControl ..
@@ -20,24 +20,40 @@ func NewMouseControl(win *pixelgl.Window) *MouseControl {
 	}
 }
 
-// MouseAction ..
-func (m *MouseControl) MouseAction(scene *scene.Scene) {
+// MouseActionClickLeft ..
+func (m *MouseControl) MouseActionClickLeft(scene *scene.Scene) {
 	pos := m.Win.MousePosition()
 	idx := scene.Grid.GetIndex(pos)
-	selectedIdx := scene.Grid.SelectedCell
 
-	if selectedIdx == nil {
-		scene.Grid.SelectedCell = &idx
-		return
+	se := scene.Grid.SelectedEntity
+
+	if se == "" {
+		// no entity selected yet
+		for k, v := range scene.Ally {
+			if v.GetIndex() == idx {
+				scene.Grid.SelectedEntity = k
+				return
+			}
+		}
+	} else if entity, ok := scene.Ally[se]; ok {
+		// cancel selection
+		if entity.GetIndex() != idx {
+			scene.Grid.SelectedEntity = ""
+		}
+	} else {
+		scene.Grid.SelectedEntity = ""
 	}
-
-	if entity, ok := scene.Grid.Cells[*selectedIdx]; ok {
-		fmt.Println(entity)
-	}
-
 }
 
-// GetMousePosition returns the mouse position
-func (m *MouseControl) GetMousePosition() pixel.Vec {
-	return m.Win.MousePosition()
+// MouseActionClickRight ..
+func (m *MouseControl) MouseActionClickRight(scene *scene.Scene) {
+	se := scene.Grid.SelectedEntity
+	if se != "" {
+		pos := m.Win.MousePosition()
+		idx := scene.Grid.GetIndex(pos)
+		// move entity to mouse position
+		if entity, ok := scene.Ally[se]; ok {
+			entity.SetIndex(idx)
+		}
+	}
 }

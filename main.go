@@ -52,8 +52,8 @@ func run() {
 		log.Fatal(err)
 	}
 
-	spaceship := scene.NewEntity(assetMap["spaceship"], pixel.V(1, 1), "spaceship", true)
-	enemy := scene.NewEntity(assetMap["enemy"], pixel.V(2, 2), "enemy", false)
+	spaceship := hexagon.NewEntity(assetMap["spaceship"], hexagon.NewHexIndex(1, 1), "spaceship", true)
+	enemy := hexagon.NewEntity(assetMap["enemy"], hexagon.NewHexIndex(2, 2), "enemy", false)
 
 	battleScene.AddEntity(spaceship)
 	battleScene.AddEntity(enemy)
@@ -70,9 +70,15 @@ func run() {
 
 		// check mouse input
 		if win.JustPressed(pixelgl.MouseButtonLeft) {
-			// select / place units
-			mc.MouseAction(battleScene)
+			// select units
+			mc.MouseActionClickLeft(battleScene)
 		}
+
+		if win.JustPressed(pixelgl.MouseButtonRight) {
+			// place units
+			mc.MouseActionClickRight(battleScene)
+		}
+
 		battleScene.RenderMousePosition(win.MousePosition())
 
 		// battleScene.RenderHexGrid()
