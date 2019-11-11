@@ -88,3 +88,8 @@ func makeCellFromIdx(radius float64, idx HexIndex, offset pixel.Vec) *HexCell {
 		Index:  idx,
 	}
 }
+
+// CheckValidIndex makes sure the idx is of the double format
+func CheckValidIndex(idx HexIndex) bool {
+	return (idx.X+idx.Y)%2 == 0
+}

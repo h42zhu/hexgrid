@@ -1,7 +1,6 @@
 package common
 
 import (
-	"fmt"
 	"image"
 	"strings"
 
@@ -56,7 +55,6 @@ func loadPicture(path string) (pixel.Picture, error) {
 	defer file.Close()
 	img, _, err := image.Decode(file)
 	if err != nil {
-		fmt.Println(err.Error())
 		return nil, err
 	}
 	return pixel.PictureDataFromImage(img), nil

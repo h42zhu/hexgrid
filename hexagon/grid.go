@@ -109,19 +109,11 @@ func (hg *HexGrid) GetWorldPosition(idx HexIndex) (pixel.Vec, error) {
 func (hg *HexGrid) GetIndex(pos pixel.Vec) HexIndex {
 	posAdj := pos.Add(hg.Center.Scaled(-1))
 
-	x := posAdj.Dot(InverseDoubleWidthBasisMatrix[0]) / hg.CellSize
-	y := posAdj.Dot(InverseDoubleWidthBasisMatrix[1]) / hg.CellSize
+	x := math.Round(posAdj.Dot(InverseDoubleWidthBasisMatrix[0]) / hg.CellSize)
+	y := math.Round(posAdj.Dot(InverseDoubleWidthBasisMatrix[1]) / hg.CellSize)
 
 	intX := int(x)
 	intY := int(y)
-	// need to adjust to inaccuracy, making sure x+y is a even number
-	if (intX+intY)%2 != 0 {
-		if (x - float64(intX)) >= (y - float64(intY)) {
-			intX++
-		} else {
-			intY++
-		}
-	}
 
 	return NewHexIndex(intX, intY)
 }

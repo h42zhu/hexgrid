@@ -2,6 +2,7 @@ package control
 
 import (
 	"sync"
+	"tactics/hexagon"
 	"tactics/scene"
 
 	"github.com/faiface/pixel/pixelgl"
@@ -49,11 +50,11 @@ func (m *MouseControl) MouseActionClickLeft(scene *scene.Scene) {
 func (m *MouseControl) MouseActionClickRight(scene *scene.Scene) {
 	se := scene.Grid.SelectedEntity
 	if se != "" {
-		pos := m.Win.MousePosition()
-		idx := scene.Grid.GetIndex(pos)
 		// move entity to mouse position
-		if entity, ok := scene.Ally[se]; ok {
-			entity.SetIndex(idx)
+		hc := scene.Grid.HoverCell
+		if entity, ok := scene.Ally[se]; ok && hc != nil {
+			entity.SetIndex(hexagon.NewHexIndex(hc.X, hc.Y))
 		}
+
 	}
 }
