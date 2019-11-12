@@ -3,9 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"tactics/common"
-	"tactics/control"
-	"tactics/hexagon"
 	"tactics/scene"
 
 	"github.com/faiface/pixel"
@@ -15,13 +12,6 @@ import (
 
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
-)
-
-var (
-	imageFiles = []string{
-		"./asset/image/enemy.png",
-		"./asset/image/spaceship.png",
-	}
 )
 
 func run() {
@@ -40,54 +30,23 @@ func run() {
 	// text altas
 	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
 
-	// hex grid system
-	hg := hexagon.NewHexGrid(40, pixel.V(0, 0), 13, 6)
+	// render context
+	renderCtx := scene.NewRenderContext(win, imd, basicAtlas)
 
-	renderer := scene.NewRenderer(win, imd, basicAtlas)
-	battleScene := scene.NewScene(renderer, hg)
-	// battleScene.RenderHexGrid()
+	// battle scene
+	battleScene := scene.NewBattleScene()
 
-	assetMap, loadFileErr := common.LoadPictures(imageFiles)
-	if loadFileErr != nil {
-		log.Fatal(err)
-	}
-
-	spaceship := hexagon.NewEntity(assetMap["spaceship"], hexagon.NewHexIndex(1, 1), "spaceship", true)
-	enemy := hexagon.NewEntity(assetMap["enemy"], hexagon.NewHexIndex(2, 2), "enemy", false)
-
-	battleScene.AddEntity(spaceship)
-	battleScene.AddEntity(enemy)
-
-	// mouse control
-	mc := control.NewMouseControl(win)
+	// scene manager
+	sceneManager := scene.NewManager(battleScene, renderCtx)
 
 	win.SetSmooth(true)
 
 	// main game loop
 	for !win.Closed() {
-		// clear
 		win.Clear(colornames.Aliceblue)
 
-		// check mouse input
-		if win.JustPressed(pixelgl.MouseButtonLeft) {
-			// select units
-			mc.MouseActionClickLeft(battleScene)
-		}
-
-		if win.JustPressed(pixelgl.MouseButtonRight) {
-			// place units
-			mc.MouseActionClickRight(battleScene)
-		}
-
-		battleScene.RenderMousePosition(win.MousePosition())
-
-		// battleScene.RenderHexGrid()
-
-		imd.Draw(win)
-		battleScene.RenderAllEntity()
-
-		win.Update()
-
+		sceneManager.UpdateInput()
+		sceneManager.Render()
 	}
 }
 
